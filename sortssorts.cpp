@@ -1,12 +1,7 @@
 #include "sortssorts.h"
 
-SortsSorts::SortsSorts()
+template <class T>
+void SortsSorts<T>::sort1()
 {
-
+	// Ну тут типа сортировка
 }
-
-SortsSorts::~SortsSorts()
-{
-
-}
-

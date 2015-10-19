@@ -2,21 +2,48 @@
 #define SORTSPRESENTER_H
 
 #include <QObject>
+#include <QThread>
+#include <QWeakPointer>
 #include "sortssorts.h"
+#include "sortsmainwindow.h"
+#include "sortsgenerator.h"
+
+class SortsMainWindow;
 
 class SortsPresenter : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit SortsPresenter(QObject *parent = 0);
-    ~SortsPresenter();
+	// тип данных, в котором будут сортировочные элементы
+	using sort_t = int;
+	explicit SortsPresenter(QSharedPointer<SortsMainWindow> mainWindow);
+	~SortsPresenter();
 
-signals:
+//signals:
+//	void setProgressBarRange(int min, int max);
+//	void setProgressEnabled(bool enabled);
+//	void setStatus(QString status);
+//	void setProgress(int progress);
+//	void addSort(QString name);
 
 public slots:
+	void generate();
+	void sort();
+	void changeSort(int sort) {
+		currentSort = sort;
+	}
+
+private slots:
+	void sorted();
 
 private:
-    SortsSorts mySorts;
+	QThread sortingThread;
+	const size_t size; // кол-во элементов
+	int currentSort; // текущая сортировка
+	// Сортировочки
+	QSharedPointer<SortsSorts<sort_t>> mySorts;
+	// Указатеь на окно
+	QWeakPointer<SortsMainWindow> mainWindow;
 };
 
 #endif // SORTSPRESENTER_H

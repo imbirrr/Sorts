@@ -18,13 +18,13 @@ SOURCES += main.cpp\
         sortsmainwindow.cpp \
     sortspresenter.cpp \
     sortssorts.cpp \
-    sortsprofiler.cpp \
     sortsgenerator.cpp
 
 HEADERS  += sortsmainwindow.h \
     sortspresenter.h \
     sortssorts.h \
     sortsprofiler.h \
-    sortsgenerator.h
+    sortsgenerator.h \
+    sortsworker.h
 
 FORMS    += sortsmainwindow.ui
