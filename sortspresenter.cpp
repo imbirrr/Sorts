@@ -1,17 +1,17 @@
 #include "sortspresenter.h"
 
-SortsPresenter::SortsPresenter(QSharedPointer<SortsMainWindow> mainWindow) :
+SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 	QObject{},
-	size{100},
+	size{1000000},
 	mySorts{}
 {
 	this->mainWindow = mainWindow;
 
-	connect(mainWindow.data(), &SortsMainWindow::sortButtonPressed,
+	connect(mainWindow, &SortsMainWindow::sortButtonPressed,
 		this, &SortsPresenter::sort);
-	connect(mainWindow.data(), &SortsMainWindow::generateButtonPressed,
+	connect(mainWindow, &SortsMainWindow::generateButtonPressed,
 		this, &SortsPresenter::generate);
-	connect(mainWindow.data(), &SortsMainWindow::sortChanged,
+	connect(mainWindow, &SortsMainWindow::sortChanged,
 		this, &SortsPresenter::changeSort);
 
 //	connect(this, &SortsPresenter::addSort,
@@ -26,8 +26,9 @@ SortsPresenter::SortsPresenter(QSharedPointer<SortsMainWindow> mainWindow) :
 //		mainWindow.data(), &SortsMainWindow::setProgressBarEnabled);
 
 //	mainWindow->setProgressBarEnabled(false);
-	mainWindow->setStatus("Поожите, иет генерация…");
+	mainWindow->setStatus("Подожите, идет генерация…");
 	generate();
+	mainWindow->setStatus("Генерация завершена.");
 }
 
 SortsPresenter::~SortsPresenter()
@@ -38,8 +39,8 @@ SortsPresenter::~SortsPresenter()
 void SortsPresenter::generate()
 {
 	mySorts->setData(SortsGenerator::generate(size));
-	mainWindow.data()->setSwaps(0);
-	mainWindow.data()->setComparisons(0);
+	mainWindow->setSwaps(0);
+	mainWindow->setComparisons(0);
 	//emit setProgressBarRange(0, size);
 	//emit setProgressBarProgress(0);
 //	mainWindow->setProgressBarRange(0, size);

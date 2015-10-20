@@ -16,7 +16,7 @@ class SortsPresenter : public QObject
 public:
 	// тип данных, в котором будут сортировочные элементы
 	using sort_t = int;
-	explicit SortsPresenter(QSharedPointer<SortsMainWindow> mainWindow);
+	explicit SortsPresenter(SortsMainWindow* mainWindow);
 	~SortsPresenter();
 
 //signals:
@@ -43,7 +43,7 @@ private:
 	// Сортировочки
 	QSharedPointer<SortsSorts<sort_t>> mySorts;
 	// Указатеь на окно
-	QWeakPointer<SortsMainWindow> mainWindow;
+	SortsMainWindow* mainWindow;
 };
 
 #endif // SORTSPRESENTER_H

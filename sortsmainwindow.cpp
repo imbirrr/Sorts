@@ -7,7 +7,7 @@ SortsMainWindow::SortsMainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	presenter.create(QSharedPointer<SortsMainWindow>(this));
+	presenter.create(this);
 
 	connections();
 }

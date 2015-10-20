@@ -11,6 +11,7 @@ QList<int> SortsGenerator::generate(int size)
 					       std::numeric_limits<int>::max());
 
 	QList<int> data;
+	data.reserve(size);
 	for (int i = 0; i < size; i++)
 		data << dist(mt);
 

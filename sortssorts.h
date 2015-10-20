@@ -21,7 +21,7 @@ public:
 	// закинуть данные
 	void setData(QList<T> data) {
 		auto t = data;
-	qDebug() << t;
+	qDebug() << t.size();
 	}
 
 	// получитьданные, неизменяемые, по ссылке
