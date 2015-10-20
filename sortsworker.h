@@ -5,6 +5,7 @@
 #include <QSharedPointer>
 #include "sortssorts.h"
 
+// только для int, т.к. QObject не может быть шаблонным классом
 class SortsWorker : public QObject
 {
 	Q_OBJECT
@@ -12,7 +13,8 @@ class SortsWorker : public QObject
 public:
 	explicit SortsWorker(QSharedPointer<SortsSorts<int>> s, int sort) :
 		QObject(),
-		sorts{s}
+		sorts{s},
+		sortType{sort}
 	{
 
 	}
@@ -22,16 +24,23 @@ private:
 	int sortType;
 
 signals:
+	void sorted();//QSharedPointer<SortsSorts<int>> result);
 
 public slots:
 	void go() {
+		qDebug() << "GO";
 		switch (sortType) {
-		case 1:
+		case 0:
+			qDebug() << sorts.isNull();
 
+			// ошибка: undefined reference to `SortsSorts<int>::sort1()'
+			//sorts->sort1(); // че к чему(
+			emit sorted();
 			break;
 		default:
 			break;
 		}
+		qDebug() << "SORTED";
 	}
 };
 

@@ -7,6 +7,7 @@
 #include "sortssorts.h"
 #include "sortsmainwindow.h"
 #include "sortsgenerator.h"
+#include "sortsworker.h"
 
 class SortsMainWindow;
 
@@ -30,10 +31,12 @@ public slots:
 	void generate();
 	void sort();
 	void changeSort(int sort) {
+		qDebug() << "CHANGE";
 		currentSort = sort;
 	}
 
 private slots:
+	void connections();
 	void sorted();
 
 private:
@@ -42,6 +45,7 @@ private:
 	int currentSort; // текущая сортировка
 	// Сортировочки
 	QSharedPointer<SortsSorts<sort_t>> mySorts;
+	QSharedPointer<SortsWorker> worker;
 	// Указатеь на окно
 	SortsMainWindow* mainWindow;
 };

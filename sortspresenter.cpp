@@ -3,16 +3,12 @@
 SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 	QObject{},
 	size{1000000},
-	mySorts{}
+	mySorts{new SortsSorts<sort_t>()}
 {
 	this->mainWindow = mainWindow;
 
-	connect(mainWindow, &SortsMainWindow::sortButtonPressed,
-		this, &SortsPresenter::sort);
-	connect(mainWindow, &SortsMainWindow::generateButtonPressed,
-		this, &SortsPresenter::generate);
-	connect(mainWindow, &SortsMainWindow::sortChanged,
-		this, &SortsPresenter::changeSort);
+	currentSort = 0;
+	mainWindow->addSortName("sort1");
 
 //	connect(this, &SortsPresenter::addSort,
 //		mainWindow.data(), &SortsMainWindow::addSortName);
@@ -26,6 +22,8 @@ SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 //		mainWindow.data(), &SortsMainWindow::setProgressBarEnabled);
 
 //	mainWindow->setProgressBarEnabled(false);
+	connections();
+
 	mainWindow->setStatus("Подожите, идет генерация…");
 	generate();
 	mainWindow->setStatus("Генерация завершена.");
@@ -33,11 +31,13 @@ SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 
 SortsPresenter::~SortsPresenter()
 {
-
+	sortingThread.quit();
+	sortingThread.wait();
 }
 
 void SortsPresenter::generate()
 {
+	qDebug() << "GEN";
 	mySorts->setData(SortsGenerator::generate(size));
 	mainWindow->setSwaps(0);
 	mainWindow->setComparisons(0);
@@ -49,18 +49,29 @@ void SortsPresenter::generate()
 
 void SortsPresenter::sort()
 {
+	qDebug() << "SORT";
+	worker.reset(new SortsWorker(mySorts, currentSort));
+	worker->moveToThread(&sortingThread);
+//	connect(&sortingThread, &QThread::finished, &worker)
+	connect(worker.data(), &SortsWorker::sorted,
+		this, &SortsPresenter::sorted);
+	sortingThread.start();
+	worker->go();
+	qDebug() << "RUNNED";
+}
 
-	switch (currentSort) {
-	case 1:
-
-		break;
-	default:
-		break;
-	}
+void SortsPresenter::connections()
+{
+	connect(mainWindow, &SortsMainWindow::sortButtonPressed,
+		this, &SortsPresenter::sort);
+	connect(mainWindow, &SortsMainWindow::generateButtonPressed,
+		this, &SortsPresenter::generate);
+	connect(mainWindow, &SortsMainWindow::sortChanged,
+		this, &SortsPresenter::changeSort);
 }
 
 void SortsPresenter::sorted()
 {
-
+	qDebug() << "DONE";
 }
 

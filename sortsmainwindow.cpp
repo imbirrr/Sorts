@@ -7,7 +7,7 @@ SortsMainWindow::SortsMainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	presenter.create(this);
+	presenter.reset(new SortsPresenter(this));
 
 	connections();
 }
