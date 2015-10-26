@@ -1,4 +1,4 @@
-#ifndef SORTSMAINWINDOW_H
+﻿#ifndef SORTSMAINWINDOW_H
 #define SORTSMAINWINDOW_H
 
 #include <QMainWindow>

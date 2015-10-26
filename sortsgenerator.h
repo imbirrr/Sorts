@@ -1,4 +1,4 @@
-#ifndef SORTSGENERATOR_H
+﻿#ifndef SORTSGENERATOR_H
 #define SORTSGENERATOR_H
 
 #include <QList>

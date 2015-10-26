@@ -1,4 +1,4 @@
-#include "sortsgenerator.h"
+﻿#include "sortsgenerator.h"
 
 
 //template <class T>

@@ -1,4 +1,4 @@
-#include "sortsmainwindow.h"
+﻿#include "sortsmainwindow.h"
 #include "ui_sortsmainwindow.h"
 
 SortsMainWindow::SortsMainWindow(QWidget *parent) :
@@ -9,7 +9,7 @@ SortsMainWindow::SortsMainWindow(QWidget *parent) :
 
 	presenter.reset(new SortsPresenter(this));
 
-	connections();
+    //connections();
 }
 
 SortsMainWindow::~SortsMainWindow()

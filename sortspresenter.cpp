@@ -1,4 +1,4 @@
-#include "sortspresenter.h"
+﻿#include "sortspresenter.h"
 
 SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 	QObject{},
