@@ -9,7 +9,7 @@ SortsMainWindow::SortsMainWindow(QWidget *parent) :
 
 	presenter.reset(new SortsPresenter(this));
 
-    connections();
+    //connections();
 }
 
 SortsMainWindow::~SortsMainWindow()
