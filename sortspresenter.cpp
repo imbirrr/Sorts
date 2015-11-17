@@ -2,13 +2,13 @@
 
 SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 	QObject{},
-	size{1000000},
-	mySorts{new SortsSorts<sort_t>()}
+	size{10000},
+	worker{new SortsWorker(new SortsSorts<sort_t>())}
 {
 	this->mainWindow = mainWindow;
 
 	currentSort = 0;
-	mainWindow->addSortName("sort1");
+	mainWindow->addSortName("sort0");
 
 //	connect(this, &SortsPresenter::addSort,
 //		mainWindow.data(), &SortsMainWindow::addSortName);
@@ -24,6 +24,15 @@ SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 //	mainWindow->setProgressBarEnabled(false);
 	connections();
 
+
+	worker->moveToThread(&sortingThread);
+//	connect(&sortingThread, &QThread::finished, &worker)
+	connect(worker.data(), &SortsWorker::sorted,
+		this, &SortsPresenter::sorted, Qt::QueuedConnection);
+	connect(this, &SortsPresenter::runSortInThread,
+		worker.data(), &SortsWorker::go, Qt::QueuedConnection);
+	sortingThread.start();
+
 	mainWindow->setStatus("Подожите, идет генерация…");
 	generate();
 	mainWindow->setStatus("Генерация завершена.");
@@ -38,7 +47,7 @@ SortsPresenter::~SortsPresenter()
 void SortsPresenter::generate()
 {
 	qDebug() << "GEN";
-	mySorts->setData(SortsGenerator::generate(size));
+	worker->setData(SortsGenerator::generate(size));
 	mainWindow->setSwaps(0);
 	mainWindow->setComparisons(0);
 	//emit setProgressBarRange(0, size);
@@ -50,14 +59,10 @@ void SortsPresenter::generate()
 void SortsPresenter::sort()
 {
 	qDebug() << "SORT";
-	worker.reset(new SortsWorker(mySorts, currentSort));
-	worker->moveToThread(&sortingThread);
-//	connect(&sortingThread, &QThread::finished, &worker)
-	connect(worker.data(), &SortsWorker::sorted,
-		this, &SortsPresenter::sorted);
-	sortingThread.start();
-	worker->go();
-	qDebug() << "RUNNED";
+	mainWindow->blockUI(true);
+	worker->setSortType(currentSort);
+	emit runSortInThread();
+	qDebug() << "RUNNED from thread" << this->thread() << "in thread" << worker->thread() ;
 }
 
 void SortsPresenter::connections()
@@ -72,6 +77,7 @@ void SortsPresenter::connections()
 
 void SortsPresenter::sorted()
 {
-	qDebug() << "DONE";
+	qDebug() << "DONE" << worker->getData();
+	mainWindow->blockUI(false);
 }
 

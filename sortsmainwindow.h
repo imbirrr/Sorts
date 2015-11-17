@@ -37,6 +37,7 @@ public slots:
 	void setComparisons(uint c);
 	void setStatus(QString status);
 	void addSortName(QString name);
+	void blockUI(bool);
 
 private slots:
 	void on_sortButtonCilcked();

@@ -17,7 +17,6 @@ TEMPLATE = app
 SOURCES += main.cpp\
         sortsmainwindow.cpp \
     sortspresenter.cpp \
-    sortssorts.cpp \
     sortsgenerator.cpp
 
 HEADERS  += sortsmainwindow.h \

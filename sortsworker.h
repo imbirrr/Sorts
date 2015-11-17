@@ -11,12 +11,16 @@ class SortsWorker : public QObject
 	Q_OBJECT
 	using sort_t = int;
 public:
-	explicit SortsWorker(QSharedPointer<SortsSorts<int>> s, int sort) :
+	explicit SortsWorker(SortsSorts<int> *s) :
 		QObject(),
 		sorts{s},
-		sortType{sort}
+		sortType{0}
 	{
 
+	}
+
+	auto getData() {
+		return sorts->getData();
 	}
 
 private:
@@ -27,14 +31,20 @@ signals:
 	void sorted();//QSharedPointer<SortsSorts<int>> result);
 
 public slots:
+	void setSortType(int type) {
+		sortType = type;
+	}
+
+	void setData(QList<int> data) {
+		sorts->setData(data);
+	}
+
 	void go() {
-		qDebug() << "GO";
+		qDebug() << "GO in thread" << this->thread();
 		switch (sortType) {
 		case 0:
-			qDebug() << sorts.isNull();
-
-			// ошибка: undefined reference to `SortsSorts<int>::sort1()'
-			//sorts->sort1(); // че к чему(
+			qDebug() << "Is data here?" << !sorts.isNull();
+			sorts->sort0();
 			emit sorted();
 			break;
 		default:

@@ -20,7 +20,8 @@ public:
 
 	// закинуть данные
 	void setData(QList<T> data) {
-		auto t = data;
+		this->data = data;
+		qDebug() << this->data.size();
 	}
 
 	// получитьданные, неизменяемые, по ссылке
@@ -33,7 +34,18 @@ public:
 		return data.size();
 	}
 
-	void sort1();
+	void sort0()
+	{
+		// Ну тут типа сортировка
+		qDebug() << "sort0…";
+
+		for (int j = 0; j < data.size()-1; j++)
+			for (int i = 0; i < data.size()-j-1; i++)
+				if (data[i] > data[i+1])
+					std::swap(data[i], data[i+1]);
+
+		qDebug() << "done!";
+	}
 
 };
 

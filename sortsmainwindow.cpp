@@ -37,7 +37,7 @@ void SortsMainWindow::setSwaps(uint s)
 
 void SortsMainWindow::setComparisons(uint c)
 {
-	ui->comparisonsLabel->setText(QString("Сранений: ") + QString::number(c));
+	ui->comparisonsLabel->setText(QString("Сравнений: ") + QString::number(c));
 }
 
 //void SortsMainWindow::setProgressBarProgress(int progress)
@@ -63,6 +63,11 @@ void SortsMainWindow::setStatus(QString status)
 void SortsMainWindow::addSortName(QString name)
 {
 	ui->sortChooser->addItem(name);
+}
+
+void SortsMainWindow::blockUI(bool block)
+{
+	ui->centralWidget->setEnabled(!block);
 }
 
 void SortsMainWindow::on_sortButtonCilcked()

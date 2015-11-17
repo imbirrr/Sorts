@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QWeakPointer>
+#include <QApplication>
 #include "sortssorts.h"
 #include "sortsmainwindow.h"
 #include "sortsgenerator.h"
@@ -26,6 +27,8 @@ public:
 //	void setStatus(QString status);
 //	void setProgress(int progress);
 //	void addSort(QString name);
+signals:
+	void runSortInThread();
 
 public slots:
 	void generate();
@@ -44,7 +47,6 @@ private:
 	const size_t size; // кол-во элементов
 	int currentSort; // текущая сортировка
 	// Сортировочки
-	QSharedPointer<SortsSorts<sort_t>> mySorts;
 	QSharedPointer<SortsWorker> worker;
 	// Указатеь на окно
 	SortsMainWindow* mainWindow;
