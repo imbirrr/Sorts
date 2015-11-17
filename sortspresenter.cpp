@@ -2,7 +2,7 @@
 
 SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 	QObject{},
-	size{10000},
+	size{1000},
 	worker{new SortsWorker(new SortsSorts<sort_t>())}
 {
 	this->mainWindow = mainWindow;
@@ -60,6 +60,7 @@ void SortsPresenter::sort()
 {
 	qDebug() << "SORT";
 	mainWindow->blockUI(true);
+	mainWindow->setStatus("Сортировка начата…");
 	worker->setSortType(currentSort);
 	emit runSortInThread();
 	qDebug() << "RUNNED from thread" << this->thread() << "in thread" << worker->thread() ;
@@ -78,6 +79,7 @@ void SortsPresenter::connections()
 void SortsPresenter::sorted()
 {
 	qDebug() << "DONE" << worker->getData();
+	mainWindow->setStatus("Сортировка закончена!");
 	mainWindow->blockUI(false);
 }
 

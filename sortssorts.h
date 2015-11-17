@@ -38,13 +38,22 @@ public:
 	{
 		// Ну тут типа сортировка
 		qDebug() << "sort0…";
-
-		for (int j = 0; j < data.size()-1; j++)
-			for (int i = 0; i < data.size()-j-1; i++)
-				if (data[i] > data[i+1])
+		profiler.reset();
+		profiler.startStopwatch();
+		for (int j = 0; j < data.size()-1; j++) {
+			for (int i = 0; i < data.size()-j-1; i++) {
+				profiler.comparison();
+				if (data[i] > data[i+1]) {
+					profiler.swap();
 					std::swap(data[i], data[i+1]);
+				}
+			}
+		}
+		profiler.stopStopwatch();
 
-		qDebug() << "done!";
+		qDebug() << "done" << "\nсравнений:" << profiler.getComparisons() <<
+			    "\nсвапов:" << profiler.getSwaps() <<
+			    "\nвремя:" << profiler.getTime();
 	}
 
 };

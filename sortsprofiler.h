@@ -55,7 +55,7 @@ public:
 
 	// Возвращает время секундомера в милисекундах
 	auto getTime() {
-		startTime.msecsTo(stopTime);
+		return startTime.msecsTo(stopTime);
 	}
 
 
