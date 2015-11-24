@@ -1,4 +1,4 @@
-п»ї#ifndef SORTSMAINWINDOW_H
+#ifndef SORTSMAINWINDOW_H
 #define SORTSMAINWINDOW_H
 
 #include <QMainWindow>
@@ -9,7 +9,7 @@ namespace Ui {
 class SortsMainWindow;
 }
 
-// РџСЂРѕСЃС‚Рѕ РѕР±СЉСЏРІРёРј РµРіРѕ С‚СѓС‚, С‡С‚РѕР±С‹ РєРѕРјРїРёР»СЏС‚РѕСЂ Р·РЅР°Р», С‡С‚Рѕ РѕРЅ РµСЃС‚СЊ
+// Просто объявим его тут, чтобы компилятор знал, что он есть
 class SortsPresenter;
 
 class SortsMainWindow : public QMainWindow
@@ -22,11 +22,11 @@ public:
 
 private:
 	Ui::SortsMainWindow *ui;
-	// РЈРјРЅС‹Р№ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РџСЂРµР·РµРЅС‚РµСЂ, РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РєР°Рє РѕР±С‹С‡РЅС‹Р№ СѓРєР°Р·Р°С‚РµР»СЊ,
-	// РЅРѕ РІСЃСЏ СЂР°Р±РѕС‚Р° СЃ РїР°РјСЏС‚СЊСЋ РїРµСЂРµС…РѕРґРёС‚ РЅР° РµРіРѕ РїР»РµС‡Рё
+	// Умный указатель на Презентер, использовать как обычный указатель,
+	// но вся работа с памятью переходит на его плечи
 	QSharedPointer<SortsPresenter> presenter;
 
-	// РІ СЌС‚РѕР№ С„СѓРЅРєС†РёРё РІСЃРµ СЃРѕРµРґРёРЅРµРЅРёСЏ
+	// в этой функции все соединения
 	void connections();
 
 public slots:

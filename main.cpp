@@ -1,4 +1,4 @@
-﻿#include "sortsmainwindow.h"
+#include "sortsmainwindow.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

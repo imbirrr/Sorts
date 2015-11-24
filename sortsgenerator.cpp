@@ -1,12 +1,12 @@
-п»ї#include "sortsgenerator.h"
+#include "sortsgenerator.h"
 
 
 //template <class T>
 QList<int> SortsGenerator::generate(int size)
 {
-	std::random_device rd; // РіРµРЅРµСЂР°С‚РѕСЂ СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР» РѕС‚ РћРЎ
-	std::mt19937 mt(rd()); // РёСЃРїРѕР»СЊР·СѓРµРј rd РґР»СЏ РіРµРЅРµСЂР°С†РёРё seed РґР»СЏ Р±РѕР»РµРµ Р±С‹СЃС‚СЂРѕРіРѕ РіРµРЅРµСЂР°С‚РѕСЂР°
-	// РґРёСЃРєСЂРµС‚РЅРѕРµ СЂР°СЃРїСЂРµРґРµР»РµРЅРёРµ
+	std::random_device rd; // генератор случайных чисел от ОС
+	std::mt19937 mt(rd()); // используем rd для генерации seed для более быстрого генератора
+	// дискретное распределение
 	std::uniform_int_distribution<int> dist(std::numeric_limits<int>::min(),
 					       std::numeric_limits<int>::max());
 
@@ -15,6 +15,6 @@ QList<int> SortsGenerator::generate(int size)
 	for (int i = 0; i < size; i++)
 		data << dist(mt);
 
-	// РІС‹РєРёРґС‹РІР°РµРј data РЅР° РјРѕСЂРѕР·
+	// выкидываем data на мороз
 	return data;
 }

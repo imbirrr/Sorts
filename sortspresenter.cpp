@@ -1,14 +1,17 @@
-п»ї#include "sortspresenter.h"
+#include "sortspresenter.h"
 
 SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 	QObject{},
-	size{1000},
+    size{100},
 	worker{new SortsWorker(new SortsSorts<sort_t>())}
 {
 	this->mainWindow = mainWindow;
 
 	currentSort = 0;
 	mainWindow->addSortName("sort0");
+
+    currentSort = 1;
+    mainWindow->addSortName("mergeSort");
 
 //	connect(this, &SortsPresenter::addSort,
 //		mainWindow.data(), &SortsMainWindow::addSortName);
@@ -33,9 +36,9 @@ SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 		worker.data(), &SortsWorker::go, Qt::QueuedConnection);
 	sortingThread.start();
 
-	mainWindow->setStatus("РџРѕРґРѕР¶РёС‚Рµ, РёРґРµС‚ РіРµРЅРµСЂР°С†РёСЏвЂ¦");
+	mainWindow->setStatus("Подожите, идет генерация…");
 	generate();
-	mainWindow->setStatus("Р“РµРЅРµСЂР°С†РёСЏ Р·Р°РІРµСЂС€РµРЅР°.");
+	mainWindow->setStatus("Генерация завершена.");
 }
 
 SortsPresenter::~SortsPresenter()
@@ -60,7 +63,7 @@ void SortsPresenter::sort()
 {
 	qDebug() << "SORT";
 	mainWindow->blockUI(true);
-	mainWindow->setStatus("РЎРѕСЂС‚РёСЂРѕРІРєР° РЅР°С‡Р°С‚Р°вЂ¦");
+	mainWindow->setStatus("Сортировка начата…");
 	worker->setSortType(currentSort);
 	emit runSortInThread();
 	qDebug() << "RUNNED from thread" << this->thread() << "in thread" << worker->thread() ;
@@ -79,7 +82,7 @@ void SortsPresenter::connections()
 void SortsPresenter::sorted()
 {
 	qDebug() << "DONE" << worker->getData();
-	mainWindow->setStatus("РЎРѕСЂС‚РёСЂРѕРІРєР° Р·Р°РєРѕРЅС‡РµРЅР°!");
+	mainWindow->setStatus("Сортировка закончена!");
 	mainWindow->blockUI(false);
 }
 

@@ -16,7 +16,7 @@ class SortsPresenter : public QObject
 {
 	Q_OBJECT
 public:
-	// С‚РёРї РґР°РЅРЅС‹С…, РІ РєРѕС‚РѕСЂРѕРј Р±СѓРґСѓС‚ СЃРѕСЂС‚РёСЂРѕРІРѕС‡РЅС‹Рµ СЌР»РµРјРµРЅС‚С‹
+	// тип данных, в котором будут сортировочные элементы
 	using sort_t = int;
 	explicit SortsPresenter(SortsMainWindow* mainWindow);
 	~SortsPresenter();
@@ -44,11 +44,11 @@ private slots:
 
 private:
 	QThread sortingThread;
-	const size_t size; // РєРѕР»-РІРѕ СЌР»РµРјРµРЅС‚РѕРІ
-	int currentSort; // С‚РµРєСѓС‰Р°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР°
-	// РЎРѕСЂС‚РёСЂРѕРІРѕС‡РєРё
+	const size_t size; // кол-во элементов
+	int currentSort; // текущая сортировка
+	// Сортировочки
 	QSharedPointer<SortsWorker> worker;
-	// РЈРєР°Р·Р°С‚РµСЊ РЅР° РѕРєРЅРѕ
+	// Указатеь на окно
 	SortsMainWindow* mainWindow;
 };
 

@@ -1,4 +1,4 @@
-п»ї#include "sortsmainwindow.h"
+#include "sortsmainwindow.h"
 #include "ui_sortsmainwindow.h"
 
 SortsMainWindow::SortsMainWindow(QWidget *parent) :
@@ -9,7 +9,7 @@ SortsMainWindow::SortsMainWindow(QWidget *parent) :
 
 	presenter.reset(new SortsPresenter(this));
 
-    //connections();
+    connections();
 }
 
 SortsMainWindow::~SortsMainWindow()
@@ -24,7 +24,7 @@ void SortsMainWindow::connections()
 	connect(ui->generateButton, &QPushButton::clicked,
 		this, &SortsMainWindow::on_generateButtonClicked);
 
-	// РєРѕСЃС‚С‹Р»СЊ:
+	// костыль:
 	void (QComboBox:: *signal)(int) = &QComboBox::currentIndexChanged;
 	connect(ui->sortChooser, signal,
 		this, &SortsMainWindow::on_sortChanged);
@@ -32,12 +32,12 @@ void SortsMainWindow::connections()
 
 void SortsMainWindow::setSwaps(uint s)
 {
-	ui->swapsLabel->setText(QString("РџРµСЂРµСЃС‚Р°РЅРѕРІРѕРє: ") + QString::number(s));
+	ui->swapsLabel->setText(QString("Перестановок: ") + QString::number(s));
 }
 
 void SortsMainWindow::setComparisons(uint c)
 {
-	ui->comparisonsLabel->setText(QString("РЎСЂР°РІРЅРµРЅРёР№: ") + QString::number(c));
+	ui->comparisonsLabel->setText(QString("Сравнений: ") + QString::number(c));
 }
 
 //void SortsMainWindow::setProgressBarProgress(int progress)

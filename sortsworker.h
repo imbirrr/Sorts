@@ -5,7 +5,7 @@
 #include <QSharedPointer>
 #include "sortssorts.h"
 
-// С‚РѕР»СЊРєРѕ РґР»СЏ int, С‚.Рє. QObject РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ С€Р°Р±Р»РѕРЅРЅС‹Рј РєР»Р°СЃСЃРѕРј
+// только для int, т.к. QObject не может быть шаблонным классом
 class SortsWorker : public QObject
 {
 	Q_OBJECT
@@ -47,6 +47,11 @@ public slots:
 			sorts->sort0();
 			emit sorted();
 			break;
+        case 1:
+            qDebug() << "Is data here?" << !sorts.isNull();
+            sorts->mergeSort();
+            emit sorted();
+            break;
 		default:
 			break;
 		}
