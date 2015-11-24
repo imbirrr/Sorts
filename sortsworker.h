@@ -35,8 +35,8 @@ public slots:
 		sortType = type;
 	}
 
-	void setData(QList<int> data) {
-		sorts->setData(data);
+    void setData(QList<int> data) {
+        sorts->setData(data.toVector());
 	}
 
 	void go() {

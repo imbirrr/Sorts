@@ -14,7 +14,7 @@ class SortsSorts
 
 private:
     SortsProfiler profiler;
-    QList<T> data;
+    QVector<T> data;
 
 public:
     struct MergePosInfo
@@ -23,12 +23,12 @@ public:
         int mid;
         int right;
     };
-    using sort_t = QList<T>;
+    using sort_t = QVector<T>;
     SortsSorts() = default;
     //	~SortsSorts();
 
     // закинуть данные
-    void setData(QList<T> data) {
+    void setData(sort_t data) {
         this->data = data;
         qDebug() << this->data.size();
     }
@@ -85,6 +85,7 @@ public:
     void merge(sort_t numbers, int left, int mid, int right)//функция слияния
     {
         sort_t temp;
+        temp.resize(25);
         int i,
                 left_end,
                 num_elements,

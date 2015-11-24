@@ -50,7 +50,7 @@ SortsPresenter::~SortsPresenter()
 void SortsPresenter::generate()
 {
 	qDebug() << "GEN";
-	worker->setData(SortsGenerator::generate(size));
+    worker->setData(SortsGenerator::generate(size));
 	mainWindow->setSwaps(0);
 	mainWindow->setComparisons(0);
 	//emit setProgressBarRange(0, size);
