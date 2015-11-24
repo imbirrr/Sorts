@@ -13,22 +13,17 @@ class SortsSorts
 {
 
 private:
+    using sort_t = QVector<T>;
     SortsProfiler profiler;
     QVector<T> data;
 
 public:
-    struct MergePosInfo
-    {
-        int left;
-        int mid;
-        int right;
-    };
-    using sort_t = QVector<T>;
+
     SortsSorts() = default;
     //	~SortsSorts();
 
     // закинуть данные
-    void setData(sort_t data) {
+    void setData(QVector<T> data) {
         this->data = data;
         qDebug() << this->data.size();
     }
@@ -47,70 +42,53 @@ public:
     {
         profiler.reset();
         profiler.startStopwatch();
-        int mid,
-                left = 0,
-                right = data.size() - 1;
-        std::vector<std::pair<int, int>> list;
-        std::vector<MergePosInfo> mlist;
-        list.push_back(std::pair<int, int>(left, right));
 
-        MergePosInfo info;
-        while(true){
-            if(list.size() == 0)
-                break;
+        int n = data.size();
 
-            left = list.back().first;
-            right = list.back().second;
-            list.pop_back();
-            mid = (right + left) / 2;
+        T *buf(new T[n]);
 
-            if(left < right)
+        for(auto size = 1; size < n; size*=2)
+        {
+            int start = 0;
+
+            for(; (start+size) < n; start += size*2)
             {
-                info.left = left;
-                info.right = right;
-                info.mid = mid + 1;
-
-                mlist.push_back(info);
-                list.push_back(std::pair<int, int>(left, mid));
-                list.push_back(std::pair<int, int>((mid+1), right));
+                if(size < (n - start - size)){
+                    merge(data.data() + start, size, data.data() + start + size, size, buf + start);
+                }else{
+                    merge(data.data() + start, size, data.data() + start + size, n - start - size, buf + start);
+                }
             }
+
+            for(; start<n; ++start)
+                buf[start] = data.data()[start];
+            T *temp = buf;
+            buf = data.data();
+            data.data() = temp;
         }
 
-        for(auto i = mlist.size() - 1; i >= 0; i--)
-            merge(data, mlist[i].left, mlist[i].mid, mlist[i].right);
+        delete[] buf;
 
         profiler.stopStopwatch();
     }
 
-    void merge(sort_t numbers, int left, int mid, int right)//функция слияния
+    void merge(T const *const A, int const nA, T const *const B, int const nB, T *const C)
     {
-        sort_t temp;
-        temp.resize(25);
-        int i,
-                left_end,
-                num_elements,
-                tmp_pos;
-
-        left_end = mid -1;
-        tmp_pos = left;
-        num_elements = right - left + 1;
-
-        while((left <= left_end) && (mid <= right)){
-            if(numbers[left] <= numbers[mid])
-                temp[tmp_pos++] = numbers[left++];
-            else
-                temp[tmp_pos++] = numbers[mid++];
+        int a(0),
+                b(0);
+        while(a + b <= nA + nB)
+        {
+            if((b >= nB) || ((a < nA) && (A[a] <= B[b])))
+            {
+                C[a + b] = A[a];
+                ++a;
+            } else {
+                C[a + b] = B[b];
+                ++b;
+            }
         }
-
-        while(left <= left_end)
-            temp[tmp_pos++] = numbers[left++];
-
-        while(mid <= right)
-            temp[tmp_pos++] = numbers[mid++];
-
-        for(i = 0; i < num_elements; i++)
-            numbers[right--] = temp[right];
     }
+
 
     void sort0() //пузырек.. для тестирования
     {
