@@ -7,7 +7,7 @@
 QT       += core gui
 
 #CONFIG += c++14
-QMAKE_CXXFLAGS += -std=gnu++1y
+QMAKE_CXXFLAGS += -std=gnu++1y -O3 -march=corei7-avx -pipe
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Sorts

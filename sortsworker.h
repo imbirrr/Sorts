@@ -35,23 +35,23 @@ public slots:
 		sortType = type;
 	}
 
-    void setData(QList<int> data) {
-        sorts->setData(data.toVector());
+	void setData(QList<int> data) {
+		sorts->setData(data.toVector());
 	}
 
 	void go() {
-		qDebug() << "GO in thread" << this->thread();
+		qDebug() << "GO in thread" << this->thread() << "type" << sortType;
 		switch (sortType) {
 		case 0:
-			qDebug() << "Is data here?" << !sorts.isNull();
+			qDebug() << "sort0" << !sorts.isNull();
 			sorts->sort0();
 			emit sorted();
 			break;
-        case 1:
-            qDebug() << "Is data here?" << !sorts.isNull();
-            sorts->mergeSort();
-            emit sorted();
-            break;
+		case 1:
+			qDebug() << "merge" << !sorts.isNull();
+			sorts->mergeSort();
+			emit sorted();
+			break;
 		default:
 			break;
 		}

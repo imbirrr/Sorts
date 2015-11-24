@@ -15,10 +15,14 @@ class SortsSorts
 private:
     using sort_t = QVector<T>;
     SortsProfiler profiler;
-    QVector<T> data;
+    using sort_t = QVector<T>;
+    sort_t data;
 
 public:
+<<<<<<< HEAD
+=======
 
+>>>>>>> 2596ea74d9b1f14ae8d5d074dd630e0eebdbce4d
     SortsSorts() = default;
     //	~SortsSorts();
 
@@ -38,6 +42,16 @@ public:
         return data.size();
     }
 
+<<<<<<< HEAD
+    void mergeSort() {
+	    qDebug() << "merge…";
+	    data = mergeSort(data);
+    }
+
+    sort_t mergeSort(sort_t);
+    auto merge(auto l, auto r);
+
+=======
     void mergeSort()//сортировка слиянием
     {
         profiler.reset();
@@ -88,6 +102,7 @@ public:
             }
         }
     }
+>>>>>>> 2596ea74d9b1f14ae8d5d074dd630e0eebdbce4d
 
 
     void sort0() //пузырек.. для тестирования
@@ -113,5 +128,55 @@ public:
     }
 
 };
+
+
+template <class T>
+auto SortsSorts<T>::merge(auto l, auto r) {
+	sort_t result;
+
+//	qDebug() <<"merge" << l << "and" << r;
+	while (l.size() > 0 && r.size() > 0) {
+		if (l.first() <= r.first()){
+			result += l.takeFirst();
+		} else {
+			result += r.takeFirst();
+		}
+	}
+	if (l.size() > 0)
+		result += l;
+	if (r.size() > 0)
+		result += r;
+
+//	qDebug() <<"result" << result;
+	return result;
+}
+
+//сортировка слиянием
+template <class T>
+typename SortsSorts<T>::sort_t SortsSorts<T>::mergeSort(sort_t m) {
+	profiler.reset();
+	profiler.startStopwatch();
+
+
+	sort_t left, right, result;
+	if (m.size() <= 1)
+		return m;
+
+	auto middle = m.size() / 2;
+	for (auto i = 0; i < middle; i++)
+		left += m[i];
+
+	for (auto i = middle; i < m.size(); i++)
+		right += m[i];
+
+//	qDebug() << left.size() << "L";
+	left = mergeSort(left);
+//	qDebug() << right.size() << "R";
+	right = mergeSort(right);
+	result = merge(left, right);
+
+	profiler.stopStopwatch();
+	return result;
+}
 
 #endif // SORTSSORTS_H

@@ -2,7 +2,7 @@
 
 SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 	QObject{},
-    size{100},
+    size{1000000},
 	worker{new SortsWorker(new SortsSorts<sort_t>())}
 {
 	this->mainWindow = mainWindow;
@@ -10,7 +10,6 @@ SortsPresenter::SortsPresenter(SortsMainWindow* mainWindow) :
 	currentSort = 0;
 	mainWindow->addSortName("sort0");
 
-    currentSort = 1;
     mainWindow->addSortName("mergeSort");
 
 //	connect(this, &SortsPresenter::addSort,
@@ -65,6 +64,7 @@ void SortsPresenter::sort()
 	mainWindow->blockUI(true);
 	mainWindow->setStatus("Сортировка начата…");
 	worker->setSortType(currentSort);
+	qDebug() << "ds" << currentSort;
 	emit runSortInThread();
 	qDebug() << "RUNNED from thread" << this->thread() << "in thread" << worker->thread() ;
 }
@@ -81,7 +81,7 @@ void SortsPresenter::connections()
 
 void SortsPresenter::sorted()
 {
-	qDebug() << "DONE" << worker->getData();
+	qDebug() << "DONE" << worker->getData().size();
 	mainWindow->setStatus("Сортировка закончена!");
 	mainWindow->blockUI(false);
 }

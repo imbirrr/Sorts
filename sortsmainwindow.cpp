@@ -82,5 +82,6 @@ void SortsMainWindow::on_generateButtonClicked()
 
 void SortsMainWindow::on_sortChanged(int sort)
 {
+	qDebug() << "c" << sort;
 	emit sortChanged(sort);
 }
