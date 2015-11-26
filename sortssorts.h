@@ -6,6 +6,7 @@
 #include "sortsprofiler.h"
 #include <queue>
 #include <vector>
+#include <cstring>
 
 
 template <class T> // T -- тип сортируемой информации
@@ -15,14 +16,9 @@ class SortsSorts
 private:
     using sort_t = QVector<T>;
     SortsProfiler profiler;
-    using sort_t = QVector<T>;
     sort_t data;
 
 public:
-<<<<<<< HEAD
-=======
-
->>>>>>> 2596ea74d9b1f14ae8d5d074dd630e0eebdbce4d
     SortsSorts() = default;
     //	~SortsSorts();
 
@@ -42,70 +38,105 @@ public:
         return data.size();
     }
 
-<<<<<<< HEAD
     void mergeSort() {
 	    qDebug() << "merge…";
 	    data = mergeSort(data);
     }
 
-    sort_t mergeSort(sort_t);
-    auto merge(auto l, auto r);
+    sort_t mergeSort(sort_t); //сортировка слиянием
+    auto merge(auto l, auto r);//слияние
 
-=======
-    void mergeSort()//сортировка слиянием
+    void qSortAsm()
     {
         profiler.reset();
         profiler.startStopwatch();
 
-        int n = data.size();
+        T *p = data.data();
+        T *m = new T[data.size()];
+        memcpy(m, p, sizeof(T)*data.size()); //теперь в м адрес исходного массива
+        size_t n = data.size(); //размер массива
+        size_t n1 = data.size() - 1;
+        auto step = sizeof(T); //шаг сдвига
+        auto l = 0;
 
-        T *buf(new T[n]);
-
-        for(auto size = 1; size < n; size*=2)
-        {
-            int start = 0;
-
-            for(; (start+size) < n; start += size*2)
-            {
-                if(size < (n - start - size)){
-                    merge(data.data() + start, size, data.data() + start + size, size, buf + start);
-                }else{
-                    merge(data.data() + start, size, data.data() + start + size, n - start - size, buf + start);
-                }
-            }
-
-            for(; start<n; ++start)
-                buf[start] = data.data()[start];
-            T *temp = buf;
-            buf = data.data();
-            data.data() = temp;
-        }
-
-        delete[] buf;
+        asm(
+        "qsort:"
+        "movl m, %esi"
+        "movl l, %eax"
+        "movl %eax, %ecx"
+        "movl n1, %ebx"
+        "add %ebx, %ecx"
+        "shr $1, %ecx"
+        "movl (%esi,%ecx,$4), %ecx"
+        "cmp %ebx, %eax"
+        "ja end_while1"
+        "begin_while1:"
+        "loop_while2:"
+        "cmp %ecx, (%esi,%eax,$4)"
+        "jge end_while2"
+        "inc %eax"
+        "jmp loop_while2"
+        "end_while2:"
+        " "
+        "loop_while3:"
+        "cmp %ecx, (%esi,%ebx,$4)"
+        "jle end_while3"
+        "dec %ebx"
+        "jmp loop_while3"
+        "end_while3:"
+        " "
+        "cmp %ebx, %eax"
+        "ja end_if1"
+        "jz no_change"
+        "pushl %ecx"
+        "movl (%esi,%eax,$4), %ecx"
+        "movl (%esi,%ebx,$4), %edx"     //тут меняем местами
+        "movl %edx, (%esi,%eax,$4)"
+        "movl %ecx, (%esi,%ebx,$4)"
+        "popl %ecx"
+        "no_change:"
+        "inc %eax"
+        "dec %ebx"
+        "end_if1:"
+        " "
+        "cmp %ebx, %eax"
+        "jbe begin_while1"
+        "end_while1:"
+        " "
+        "cmp %ebx, l"
+        "jae end_if2"
+        "pushl %eax"
+        "call "
+        );
 
         profiler.stopStopwatch();
     }
 
-    void merge(T const *const A, int const nA, T const *const B, int const nB, T *const C)
+    void mergeSortAsm()
     {
-        int a(0),
-                b(0);
-        while(a + b <= nA + nB)
-        {
-            if((b >= nB) || ((a < nA) && (A[a] <= B[b])))
-            {
-                C[a + b] = A[a];
-                ++a;
-            } else {
-                C[a + b] = B[b];
-                ++b;
-            }
-        }
+        profiler.reset();
+        profiler.startStopwatch();
+
+        T *p = data.data();
+        T *m = new T[data.size()];
+        memcpy(m, p, sizeof(T)*data.size()); //теперь в м адрес исходного массива
+        size_t n = data.size(); //размер массива
+        auto step = sizeof(T); //шаг сдвига
+
+        asm
+        (
+        ""
+        );
+
+        profiler.stopStopwatch();
     }
->>>>>>> 2596ea74d9b1f14ae8d5d074dd630e0eebdbce4d
 
+    void bubleSortAsm()
+    {
 
-    void sort0() //пузырек.. для тестирования
+    }
+
+    void bubleSort() //пузырек.. для тестирования
     {
         // Ну тут типа сортировка
         qDebug() << "sort0…";
