@@ -14,10 +14,13 @@ public:
 	explicit SortsWorker(SortsSorts<int> *s) :
 		QObject(),
 		sorts{s},
-		sortType{0}
+        sortType{0},
+        asmSortType{0}
 	{
 
 	}
+
+    const SortsProfiler* getProfiler() const { return sorts->cpro();}
 
 	auto getData() {
 		return sorts->getData();
@@ -25,7 +28,8 @@ public:
 
 private:
 	QSharedPointer<SortsSorts<int>> sorts;
-	int sortType;
+    int sortType;
+    int asmSortType;
 
 signals:
 	void sorted();//QSharedPointer<SortsSorts<int>> result);
@@ -35,9 +39,27 @@ public slots:
 		sortType = type;
 	}
 
+    void setAsmSortType(int type) {
+        asmSortType = type;
+    }
+
+    void setUnsortData(){
+        sorts->setUnsortedData();
+    }
+
 	void setData(QList<int> data) {
 		sorts->setData(data.toVector());
+//        sorts->writeDataToFile("setted");
+//        qDebug() << "WRITED";
 	}
+
+    void writeDataToFile(const QString &filename) const {
+        sorts->writeDataToFile(filename);
+    }
+
+    void writeSortedDataToFile(const QString &filename) const {
+        sorts->writeSortedDataToFile(filename);
+    }
 
 	void go() {
 		qDebug() << "GO in thread" << this->thread() << "type" << sortType;
@@ -52,11 +74,35 @@ public slots:
 			sorts->mergeSort();
 			emit sorted();
 			break;
-		default:
-			break;
+        case 2:
+            qDebug() << "quick" << !sorts.isNull();
+            sorts->quickSort();
+            emit sorted();
+            break;
 		}
+
 		qDebug() << "SORTED";
+        //sorts->writeDataToFile("sorted");
+        qDebug() << "WRITED";
 	}
+
+    void goAsm(){
+        switch (asmSortType) {
+        case 0:
+            qDebug() << "quickAsm" << !sorts.isNull();
+            sorts->qSortAsm();
+            emit sorted();
+            break;
+        case 1:
+            qDebug() << "bubble" << !sorts.isNull();
+            sorts->bubleSortAsm();
+            emit sorted();
+            break;
+        default:
+            break;
+
+        }
+    }
 };
 
 #endif // SORTSWORKER_H

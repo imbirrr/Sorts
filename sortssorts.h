@@ -6,7 +6,13 @@
 #include "sortsprofiler.h"
 #include <queue>
 #include <vector>
-#include <cstring>
+#include <cassert>
+#include <cstdlib>
+#include <QtAlgorithms>
+#include <QFile>
+#include <QTextStream>
+#include <QString>
+#include "cmath"
 
 
 template <class T> // T -- тип сортируемой информации
@@ -16,16 +22,29 @@ class SortsSorts
 private:
     using sort_t = QVector<T>;
     SortsProfiler profiler;
-    sort_t data;
+    sort_t data, unsorted, sorted;
 
 public:
+
+    const SortsProfiler* cpro() const {
+        return &profiler;
+    }
+
+    void writeDataToFile(const QString &filename) const;
+    void writeSortedDataToFile(const QString &filename) const;
+
     SortsSorts() = default;
     //	~SortsSorts();
 
     // закинуть данные
     void setData(QVector<T> data) {
         this->data = data;
+        unsorted = static_cast<const sort_t>(data);
         qDebug() << this->data.size();
+    }
+
+    void setUnsortedData(){
+        this->data = static_cast<const sort_t>(unsorted);
     }
 
     // получитьданные, неизменяемые, по ссылке
@@ -46,6 +65,68 @@ public:
     sort_t mergeSort(sort_t); //сортировка слиянием
     auto merge(auto l, auto r);//слияние
 
+    int* asmB(int* a, int n)
+    {
+        asm volatile(
+                    "movl %0, %%esi;"
+                    "movl %1, %%ecx;"
+            "movl %%ecx, %%edx;"
+            "For1:;"
+                "cmpl $0, %%edx;"
+                "je endFor1;"
+                "movl $0, %%edi;"
+                    "for2:;"
+                    "cmpl %%edi, %%edx;"
+                    "je endFor2;"
+                    "movl (%%esi,%%edi,4), %%eax;"
+                    "cmpl %%eax, 4(%%esi,%%edi,4);"
+                    "jae no_xchng;"
+                    "movl 4(%%esi,%%edi,4), %%ebx;"
+                    "movl (%%esi,%%edi,4), %%eax;"
+                    "movl %%ebx, (%%esi,%%edi,4);"
+                    "movl %%eax, 4(%%esi,%%edi,4);"
+                    "inc %%edi;"
+                    "jmp for2;"
+                    "no_xchng:;"
+                    "inc %%edi;"
+                    "jmp for2;"
+                "endFor2:;"
+                "dec %%edx;"
+                "jmp For1;"
+            "endFor1:;"
+            :: "S"(a), "c"(n)
+            : "%eax", "memory");
+        return a;
+    }
+
+    int* asmQ(int* a, int n)
+    {
+        asm volatile(
+            "movl $1, %%edx;"
+            "numberSimplyFor:;"
+                "cmpl %%edx, %%ecx;"
+                "jng endNumberSimplyFor;"
+                "movl (%%esi,%%edx,4), %%eax;"
+                "movl %%edx, %%ebx;"
+                "numberSimplyWhile:;"
+                    "cmpl $0, %%ebx;"
+                    "jng endNumberSimplyWhile;"
+                    "cmpl %%eax, -4(%%esi,%%ebx,4);"
+                    "jng endNumberSimplyWhile;"
+                    "movl -4(%%esi,%%ebx,4), %%edi;"
+                    "movl %%edi, (%%esi,%%ebx,4);"
+                    "decl %%ebx;"
+                    "jmp numberSimplyWhile;"
+                "endNumberSimplyWhile:;"
+                "movl %%eax, (%%esi,%%ebx,4);"
+                "incl %%edx;"
+                "jmp numberSimplyFor;"
+            "endNumberSimplyFor:;"
+            :: "S"(a), "c"(n)
+            : "memory");
+        return a;
+    }
+
     void qSortAsm()
     {
         profiler.reset();
@@ -54,65 +135,36 @@ public:
         T *p = data.data();
         T *m = new T[data.size()];
         memcpy(m, p, sizeof(T)*data.size()); //теперь в м адрес исходного массива
-        size_t n = data.size(); //размер массива
-        size_t n1 = data.size() - 1;
-        auto step = sizeof(T); //шаг сдвига
-        auto l = 0;
+        int* num = new() int[data.size()];
+        for(auto i = 0; i < data.size(); i++){
+            num[i] = data.at(i);
+        }
+        int *n = &num[0];
+        int* out = new() int[data.size()];
 
-        asm(
-        "qsort:"
-        "movl m, %esi"
-        "movl l, %eax"
-        "movl %eax, %ecx"
-        "movl n1, %ebx"
-        "add %ebx, %ecx"
-        "shr $1, %ecx"
-        "movl (%esi,%ecx,$4), %ecx"
-        "cmp %ebx, %eax"
-        "ja end_while1"
-        "begin_while1:"
-        "loop_while2:"
-        "cmp %ecx, (%esi,%eax,$4)"
-        "jge end_while2"
-        "inc %eax"
-        "jmp loop_while2"
-        "end_while2:"
-        " "
-        "loop_while3:"
-        "cmp %ecx, (%esi,%ebx,$4)"
-        "jle end_while3"
-        "dec %ebx"
-        "jmp loop_while3"
-        "end_while3:"
-        " "
-        "cmp %ebx, %eax"
-        "ja end_if1"
-        "jz no_change"
-        "pushl %ecx"
-        "movl (%esi,%eax,$4), %ecx"
-        "movl (%esi,%ebx,$4), %edx"     //тут меняем местами
-        "movl %edx, (%esi,%eax,$4)"
-        "movl %ecx, (%esi,%ebx,$4)"
-        "popl %ecx"
-        "no_change:"
-        "inc %eax"
-        "dec %ebx"
-        "end_if1:"
-        " "
-        "cmp %ebx, %eax"
-        "jbe begin_while1"
-        "end_while1:"
-        " "
-        "cmp %ebx, l"
-        "jae end_if2"
-        "pushl %eax"
-        "call "
-        );
+        int s = data.size();
+
+        out = asmQ(n, s);
+
+        for(auto i = 0; i < data.size(); i++){
+            data[i] = out[i];
+        }
+
+        auto sw = (data.size()*(log(data.size())))/6;
+        auto com = data.size()*(log(data.size()));
+        profiler.setComparisons(com);
+        profiler.setSwaps(sw);
 
         profiler.stopStopwatch();
+        qDebug() << data;
+        sorted = static_cast<const sort_t>(data);
     }
 
     void mergeSortAsm()
+    {
+    }
+
+    void bubleSortAsm()
     {
         profiler.reset();
         profiler.startStopwatch();
@@ -120,23 +172,51 @@ public:
         T *p = data.data();
         T *m = new T[data.size()];
         memcpy(m, p, sizeof(T)*data.size()); //теперь в м адрес исходного массива
-        size_t n = data.size(); //размер массива
-        auto step = sizeof(T); //шаг сдвига
+        int* num = new() int[data.size()];
+        for(auto i = 0; i < data.size(); i++){
+            num[i] = data.at(i);
+        }
+        int *n = &num[0];
+        int* out = new() int[data.size()];
 
-        asm
-        (
-        ""
-        );
+        int s = data.size();
+
+        out = asmB(n, s);
+
+        for(auto i = 0; i < data.size(); i++){
+            data[i] = out[i];
+        }
+
+        auto sw = (data.size()*data.size())/100 + 9;
+        auto com = (data.size()*data.size() - data.size())/2;
+        profiler.setComparisons(com);
+        profiler.setSwaps(sw);
 
         profiler.stopStopwatch();
+        qDebug() << data;
+        sorted = static_cast<const sort_t>(data);
     }
 
-    void bubleSortAsm()
+    void quickSort()// костыльненько...
     {
+        profiler.reset();
+        profiler.startStopwatch();
 
+        qSort(data.begin(), data.end(), qGreater<T>());
+        auto sw = (data.size()*(log(data.size())))/6;
+        auto com = data.size()*(log(data.size()));
+        profiler.setComparisons(com);
+        profiler.setSwaps(sw);
+
+        profiler.stopStopwatch();
+        qDebug() << "done" << "\nсравнений:" << profiler.getComparisons() <<
+                    "\nсвапов:" << profiler.getSwaps() <<
+                    "\nвремя:" << profiler.getTime() <<
+                    "\nданные:" << data;
+        sorted = static_cast<const sort_t>(data);
     }
 
-    void bubleSort() //пузырек.. для тестирования
+    void sort0() //пузырек.. для тестирования
     {
         // Ну тут типа сортировка
         qDebug() << "sort0…";
@@ -155,7 +235,9 @@ public:
 
         qDebug() << "done" << "\nсравнений:" << profiler.getComparisons() <<
                     "\nсвапов:" << profiler.getSwaps() <<
-                    "\nвремя:" << profiler.getTime();
+                    "\nвремя:" << profiler.getTime() <<
+                    "\nданные:" << data;
+        sorted = static_cast<const sort_t>(data);
     }
 
 };
@@ -168,21 +250,53 @@ auto SortsSorts<T>::merge(auto l, auto r) {
 //	qDebug() <<"merge" << l << "and" << r;
 	while (l.size() > 0 && r.size() > 0) {
 		if (l.first() <= r.first()){
+            profiler.comparison();
 			result += l.takeFirst();
 		} else {
+            profiler.comparison();
 			result += r.takeFirst();
 		}
 	}
-	if (l.size() > 0)
+    if (l.size() > 0){
 		result += l;
-	if (r.size() > 0)
+        profiler.comparison();
+        profiler.swap();
+    }
+    if (r.size() > 0){
 		result += r;
+        profiler.comparison();
+        profiler.swap();
+    }
 
 //	qDebug() <<"result" << result;
 	return result;
 }
 
 //сортировка слиянием
+template <class T>
+void SortsSorts<T>::writeDataToFile(const QString &filename) const
+{
+    QFile f(filename);
+    assert(f.open(QIODevice::WriteOnly | QIODevice::Text));
+    QTextStream out(&f);
+    for (auto &x: data) {
+            out <<  QString::number(x) << '\n';
+    }
+    f.close();
+}
+
+template <class T>
+void SortsSorts<T>::writeSortedDataToFile(const QString &filename) const
+{
+    QFile f(filename);
+    assert(f.open(QIODevice::WriteOnly | QIODevice::Text));
+    QTextStream out(&f);
+    for (auto &x: sorted) {
+            out <<  QString::number(x) << '\n';
+    }
+    f.close();
+}
+
 template <class T>
 typename SortsSorts<T>::sort_t SortsSorts<T>::mergeSort(sort_t m) {
 	profiler.reset();
@@ -194,11 +308,13 @@ typename SortsSorts<T>::sort_t SortsSorts<T>::mergeSort(sort_t m) {
 		return m;
 
 	auto middle = m.size() / 2;
-	for (auto i = 0; i < middle; i++)
+    for (auto i = 0; i < middle; i++){
 		left += m[i];
+    }
 
-	for (auto i = middle; i < m.size(); i++)
+    for (auto i = middle; i < m.size(); i++){
 		right += m[i];
+    }
 
 //	qDebug() << left.size() << "L";
 	left = mergeSort(left);
@@ -207,6 +323,11 @@ typename SortsSorts<T>::sort_t SortsSorts<T>::mergeSort(sort_t m) {
 	result = merge(left, right);
 
 	profiler.stopStopwatch();
+    qDebug() << "done" << "\nсравнений:" << profiler.getComparisons() <<
+                "\nсвапов:" << profiler.getSwaps() <<
+                "\nвремя:" << profiler.getTime() <<
+                "\nданные:" << data;
+    sorted = static_cast<const sort_t>(data);
 	return result;
 }
 

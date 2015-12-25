@@ -21,6 +21,9 @@ public:
 	explicit SortsPresenter(SortsMainWindow* mainWindow);
 	~SortsPresenter();
 
+//    void writeToFile(QString filename);
+//    void writeSortedToFile(QString filename);
+
 //signals:
 //	void setProgressBarRange(int min, int max);
 //	void setProgressEnabled(bool enabled);
@@ -32,11 +35,16 @@ signals:
 
 public slots:
 	void generate();
-	void sort();
+    void sort();
+    void sortAsm();
 	void changeSort(int sort) {
 		qDebug() << "CHANGE";
 		currentSort = sort;
 	}
+    void changeAsmSort(int sort) {
+        qDebug() << "CHANGE";
+        currentAsmSort = sort;
+    }
 
 private slots:
 	void connections();
@@ -44,8 +52,9 @@ private slots:
 
 private:
 	QThread sortingThread;
-	const size_t size; // кол-во элементов
+    size_t size; // кол-во элементов
 	int currentSort; // текущая сортировка
+    int currentAsmSort;
 	// Сортировочки
 	QSharedPointer<SortsWorker> worker;
 	// Указатеь на окно

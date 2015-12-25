@@ -54,9 +54,17 @@ public:
 	}
 
 	// ¬озвращает врем€ секундомера в милисекундах
-	auto getTime() {
+    auto getTime() const {
 		return startTime.msecsTo(stopTime);
 	}
+
+    void setComparisons (int inp){
+        comparisons = inp;
+    }
+
+    void setSwaps (int inp){
+        swaps = inp;
+    }
 
 
 private:
